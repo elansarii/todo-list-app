@@ -2,15 +2,10 @@ package main
 
 import (
 	"encoding/csv"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
-	"strings"
-	"text/tabwriter"
 	"time"
-
-	"github.com/mergestat/timediff"
 )
 
 func check(e error) {
@@ -24,38 +19,9 @@ func main() {
 	// addTask("IDK man", counter)
 	// addTask("Drink water", counter)
 
-	printTasks()
+	// printTasks()
 
 }
-
-func printTasks() {
-	data, err := os.ReadFile("tasks.csv")
-	check(err)
-	writer := tabwriter.NewWriter(os.Stdout, 0, 2, 4, ' ', 0)
-	writer.Write([]byte("ID\tTask\tCreated on\tStatus\tInterval"))
-
-	lines := strings.Split(string(data), "\n")
-	for _, line := range lines[1:] {
-		token := strings.Split(line, ",")
-		// Added check to ensure token has at least 4 entries
-		if len(token) < 4 {
-			continue
-		}
-		id := token[0]
-		task := token[1]
-		createdOn := token[2]
-		status := token[3]
-		parsedTime, err := time.Parse(time.RFC3339, createdOn)
-		check(err)
-
-		interval := timediff.TimeDiff(parsedTime)
-
-		fmt.Fprintf(writer, "\n%s\t%s\t%s\t%s\t%s", id, task, createdOn, status, interval)
-
-	}
-	writer.Flush()
-}
-
 func addTask(task string, counter int) {
 	counter++
 	f, err := os.OpenFile("tasks.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
